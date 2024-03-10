@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import { nanoid } from 'nanoid';
 
 import css from './ContactForm.module.css';
 
-const ContactForm = ({ onSubmit }) => {
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts } from '../../redux/selectors';
+import { addContact } from '../../redux/contactsSlice';
+
+const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
 
   const nameInputId = nanoid();
   const telInputId = nanoid();
@@ -28,7 +36,33 @@ const ContactForm = ({ onSubmit }) => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    onSubmit({ id: nanoid(), name, number });
+
+    let isContactName = contacts.filter(contact =>
+      contact.name.toLowerCase().includes(name.toLowerCase())
+    );
+    let isContactNumber = contacts.filter(contact =>
+      contact.number.toLowerCase().includes(number.toLowerCase())
+    );
+
+    if (isContactName.length) {
+      toast.warn(`Name ${name} is already in your contacts`, {
+        background: '#eebf31',
+        fontSize: '16px',
+        width: '350px',
+      });
+      return;
+    }
+
+    if (isContactNumber.length) {
+      toast.warn(`Number ${number} is already in your contacts`, {
+        background: '#eebf31',
+        fontSize: '16px',
+        width: '350px',
+      });
+      return;
+    }
+
+    dispatch(addContact({ id: nanoid(), name, number }));
     reset();
   };
 
