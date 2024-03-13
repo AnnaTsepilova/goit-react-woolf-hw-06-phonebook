@@ -18,11 +18,6 @@ export const contactsSlice = createSlice({
       );
       return { contacts: contacts };
     },
-    filterContact(state, action) {
-      return state.contacts.filter(contact =>
-        contact.name.toLowerCase().includes(action.payload.toLowerCase())
-      );
-    },
   },
 });
 
